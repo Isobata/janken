@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/sample.css">
+  <title>じゃんけん</title>
+</head>
+
+<body>
+  <header>
+    <h1>じゃんけん</h1>
+  </header>
+
+  <main>
+    <ul>
+      <li id="gu_btn">グー</li>
+      <li id="cho_btn">チョキ</li>
+      <li id="par_btn">パー</li>
+    </ul>
+    <div id="com_hand">コンピュータの出した手は？</div>
+    <div id="result">結果は？</div>
+  </main>
+
+  <footer>フッター</footer>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script>
+    //ここに処理を追加
+    let count = 0;
+    let win = 0;
+    let lose = 0;
+    $("#gu_btn").on("click", function () {
+      const enemy = Math.floor(Math.random() * 3);
+      if (enemy === 0) {
+        $("#com_hand").text("相手はグーを出した");
+        $("#result").text("あいこだ\nもう一回");
+        $("#result").css("color", "Black");
+      } else if (enemy === 1) {
+        count++;
+        win++;
+        $("#com_hand").text("相手はチョキを出した");
+        $("#result").text("お前の勝ちだ\n" + count + "戦" + win + "勝" + lose + "敗です");
+        $("#result").css("color", "Red");
+      } else {
+        count++;
+        lose++;
+        $("#com_hand").text("相手はパーを出した");
+        $("#result").text("お前の負けだ\n" + count + "戦" + win + "勝" + lose + "敗です");
+        $("#result").css("color", "Blue");
+      }
+    })
+    $("#cho_btn").on("click", function () {
+      const enemy = Math.floor(Math.random() * 3);
+      if (enemy === 0) {
+        count++;
+        lose++;
+        $("#com_hand").text("相手はグーを出した");
+        $("#result").text("お前の負けだ\n" + count + "戦" + win + "勝" + lose + "敗です");
+        $("#result").css("color", "Blue");
+      } else if (enemy === 1) {
+        $("#com_hand").text("相手はチョキを出した");
+        $("#result").text("あいこだ\nもう一回！");
+        $("#result").css("color", "Black");
+      } else {
+        count++;
+        win++;
+        $("#com_hand").text("相手はパーを出した");
+        $("#result").text("お前の勝ちだ" + count + "戦" + win + "勝" + lose + "敗です");
+        $("#result").css("color", "Red");
+      }
+    })
+    $("#par_btn").on("click", function () {
+      const enemy = Math.floor(Math.random() * 3);
+      if (enemy === 0) {
+        count++;
+        win++;
+        $("#com_hand").text("相手はグーを出した");
+        $("#result").text("お前の勝ちだ\n" + count + "戦" + win + "勝" + lose + "敗です");
+        $("#result").css("color", "Red");
+      } else if (enemy === 1) {
+        count++;
+        lose++;
+        $("#com_hand").text("相手はチョキを出した");
+        $("#result").text("お前の負けだ\n" + count + "戦" + win + "勝" + lose + "敗です");
+        $("#result").css("color", "Blue");
+      } else {
+        $("#com_hand").text("相手はパーを出した");
+        $("#result").text("あいこだ\nもう一回！");
+        $("#result").css("color", "Black");
+      }
+    })
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="css/sample.css">
+	<title>G'S QUEST</title>
+</head>
+
+<body>
+	<header>
+		<h1>G'S QUEST</h1>
+	</header>
+
+	<main>
+
+		<div id="enemy">敵を呼び出す</div>
+		<div id="enemy_HP">敵のHP</div>
+		<div id="HP">HP</div>
+		<div id="level">level</div>
+
+		<ul>
+			<li id="sword">剣</li>
+			<li id="magic">魔法</li>
+			<li id="cure">回復</li>
+			<li id="escape">逃げる</li>
+		</ul>
+		<div id="judge"></div>
+		<div id="result"></div>
+	</main>
+
+	<footer>フッター</footer>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script>
+		//ここに処理を追加
+		let HP = 100;
+		let attack = 10;
+		let magic = 15;
+		let guard = 10;
+		let level = 1;
+		let exp = 0;
+		let enemy_name;
+		let enemy_HP = 0;
+		let enemy_attack = 0;
+		let enemy_guard = 0;
+		let enemy_exp = 0;
+		$("#enemy").on("click", function () {
+			const enemy = Math.floor(Math.random() * 101);
+			if (enemy <= 30) {
+				enemy_name = "スライム"
+				enemy_HP = 10;
+				enemy_attack = 5;
+				enemy_guard = 5;
+				enemy_exp = 0;
+			} else if (enemy <= 60) {
+				enemy_name = "ゴブリン"
+				enemy_HP = 50;
+				enemy_attack = 10;
+				enemy_guard = 10;
+			} else if (enemy <= 90) {
+				enemy_name = "ドラゴン"
+				enemy_HP = 1000;
+				enemy_attack = 100;
+				enemy_guard = 100;
+			} else {
+				enemy_name = "メタルなやつ"
+				enemy_HP = 10;
+				enemy_attack = 10;
+				enemy_guard = 1000;
+			}
+			$("#enemy").text(enemy_name);
+			$("#enemy_HP").text(enemy_HP);
+		})
+
+		$("#sword").on("click", function () {
+			const critical = Math.floor(Math.random() * 101);
+			if (critical <= 40) {
+				if (attack - enemy_HP >= 0) {
+					$("#judge").text("攻撃成功");
+					$("#result").text(attack - enemy_guard + "のダメージ");
+					enemy_HP -= (attack - enemy_guard);
+					$("#enemy_HP").text(enemy_HP);
+
+				} else {
+					$("#com_hand").text("ダメージを与えられない");
+				}
+
+			} else if (enemy <= 80) {
+				$("#judge").text("避けられた");
+				$("#result").text("ダメージを与えられない");
+			} else {
+				$("#judge").text("会心の一撃");
+				$("#result").text(attack + "のダメージ");
+				enemy_HP -= attack;
+				$("#enemy_HP").text(enemy_HP);
+			}
+			if (enemy_HP <= 0) {
+				alert("勝利！")
+			}
+		})
+
+
+		$("#magic").on("click", function () {
+			const magic = Math.floor(Math.random() * 11);
+			if (magic <= 8) {
+				$("#judge").text("攻撃成功");
+				$("#result").text(attack + "のダメージ");
+			} else if (enemy === 1) {
+				count++;
+				lose++;
+				$("#com_hand").text("相手はチョキを出した");
+				$("#result").text("お前の負けだ\n" + count + "戦" + win + "勝" + lose + "敗です");
+				$("#result").css("color", "Blue");
+			} else {
+				$("#com_hand").text("相手はパーを出した");
+				$("#result").text("あいこだ\nもう一回！");
+				$("#result").css("color", "Black");
+			}
+		})
+	</script>
+
+</body>
+
+</html>

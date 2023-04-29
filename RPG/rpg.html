@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<title>RPGゲーム</title>
+	<link rel="stylesheet" href="battle.css">
+	<style>
+		/* ステータスバーのスタイル */
+		.status-bar {
+			background-color: #ccc;
+			height: 20px;
+			margin-bottom: 10px;
+			position: relative;
+		}
+
+		.status-bar__inner {
+			background-color: #0f0;
+			height: 100%;
+			position: absolute;
+			top: 0;
+			left: 0;
+			transition: width 0.2s;
+		}
+
+		.status-bar__text {
+			position: absolute;
+			top: 0;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+	</style>
+</head>
+
+<body>
+	<h1>RPGゲーム</h1>
+
+	<!-- プレイヤーのステータスバー -->
+	<div class="name">
+		<span id="player-name">Player</span>
+		<div class="status-bar">
+			<div id="player-health" class="status-bar__inner"></div>
+		</div>
+		<span id="player-status" class="status-bar__text">Player</span>
+		<!-- 敵のステータスバー -->
+		<span id="enemy-name">Enemy</span>
+
+		<div class="status-bar">
+			<div id="enemy-health" class="status-bar__inner"></div>
+		</div>
+		<span id="enemy-status" class="status-bar__text">Enemy</span>
+	</div>
+	<!-- バトルログ -->
+	<ul id="log"></ul>
+
+	<!-- 攻撃ボタン -->
+	<button id="attack-btn">攻撃する</button>
+
+	<script>
+		// プレイヤーと敵のオブジェクトを定義する
+		class Player {
+			constructor(name, maxHealth, damage, attackAttribute, defence, level, exp, nextexp) {
+				this.name = name;
+				this.maxHealth = maxHealth;
+				this.health = maxHealth;
+				this.damage = damage;
+				this.attackAttribute = "none";
+				this.defence = defence;
+				this.level = level;
+				this.exp = exp;
+				this.nextexp = nextexp;
+
+			}
+
+			// 攻撃するメソッド
+			attack(target) {
+				const damage = this.damage;
+				logMessage(`${this.name}の攻撃！ ${target.name}に${damage}のダメージ！`);
+				target.health -= damage;
+			}
+
+			// 経験値を獲得するメソッド
+			gainExp(exp) {
+				this.exp += exp;
+				if (this.exp >= 100) {
+					this.levelUp();
+				}
+			}
+
+			// レベルアップするメソッド
+			levelUp() {
+				this.level++;
+				this.damage += 5;
+				this.defense += 5;
+				this.maxHealth += 10;
+				this.health = this.maxHealth;
+				this.nextExp *= 2;
+				logMessage(`${this.name}はレベルアップした！`);
+			}
+		}
+		// プレイヤーを作成する
+		const player = new Player('勇者', 30, 10);
+
+		class Enemy {
+			constructor(name, maxHealth, damage, exp, weakness) {
+				this.name = name;
+				this.maxHealth = maxHealth;
+				this.health = maxHealth;
+				this.damage = damage;
+				this.exp = exp;
+			}
+			// 攻撃するメソッド
+			attack(target) {
+				const damage = this.damage;
+				logMessage(`${this.name}の攻撃！ ${target.name}に${damage}のダメージ！`);
+				target.health -= damage;
+			}
+		}
+
+		// ステータスバーを更新する関数
+		function updateStatusBar() {
+			document.getElementById('player-health').textContent = `HP: ${player.health}`;
+
+			// 新しい敵の名前とHPを表示する
+			document.getElementById('enemy-name').textContent = enemy.name;
+			document.getElementById('enemy-health').textContent = `HP: ${enemy.health}/${enemy.maxHealth}`;
+
+			// もしプレイヤーまたは敵のHPが0以下になったらバトル終了
+			if (player.health <= 0) {
+				logMessage(`${player.name}は倒れた！あなたの負けです。`);
+				document.getElementById('attack-btn').disabled = true;
+			} else if (enemy.health <= 0) {
+				logMessage(`${enemy.name}は倒れた！あなたの勝ちです。`);
+				document.getElementById('attack-btn').disabled = true;
+			}
+		}
+
+		const enemy = new Enemy('スライム', 20, 5, 10);
+
+		function playerAttack() {
+			const damage = player.attack;
+			const weakness = enemy.weakness;
+			let message = `${player.name}の攻撃！`;
+
+			// 弱点属性を攻撃した場合、ダメージを2倍にする
+			if (player.attackAttribute === weakness) {
+				enemy.health -= damage * 2;
+				message += '効果抜群！';
+			} else {
+				enemy.health -= damage;
+			}
+
+			message += `${enemy.name}に${damage}のダメージ！`;
+
+			if (enemy.health <= 0) {
+				message += `${enemy.name}を倒した！`;
+				player.gainExp(enemy.exp);
+				enemy = createRandomEnemy();
+				updateStatusBar();
+			} else {
+				message += `${enemy.name}の攻撃！`;
+				const enemyDamage = enemy.damage - player.defense;
+				if (enemyDamage > 0) {
+					player.health -= enemyDamage;
+					message += `${player.name}に${enemyDamage}のダメージ！`;
+					if (player.health <= 0) {
+						message += `${player.name}は倒れてしまった...`;
+						document.getElementById('attack-btn').removeEventListener('click', playerAttack);
+					}
+				} else {
+					message += '攻撃を防いだ！';
+				}
+			}
+
+			logMessage(message);
+			updateStatusBar();
+		}
+
+		// バトルログにメッセージを追加する関数
+		function logMessage(message) {
+			const log = document.getElementById('log');
+			const li = document.createElement('li');
+			li.textContent = message;
+			log.appendChild(li);
+		}
+
+		// 攻撃を行う関数
+		function attack(attacker, defender) {
+			let damage = attacker.attack;
+
+			// ダメージを計算する
+			if (Math.random() < 0.1) {  // 10%の確率でクリティカルヒット
+				damage *= 2;
+				logMessage(`${attacker.name}の攻撃！クリティカルヒット！`);
+			} else {
+				logMessage(`${attacker.name}の攻撃！`);
+			}
+			logMessage(`${defender.name}に${damage}のダメージ！`);
+
+			// ダメージを適用する
+			defender.health -= damage;
+
+			// ステータスバーを更新する
+			function updateStatusBar() {
+				document.getElementById('player-health').textContent = `HP: ${player.health}`;
+				document.getElementById('enemy-health').textContent = `HP: ${enemy.health}`;
+
+				// もしプレイヤーまたは敵のHPが0以下になったらバトル終了
+				if (player.health <= 0) {
+					logMessage(`${player.name}は倒れた！あなたの負けです。`);
+					document.getElementById('attack-btn').disabled = true;
+				} else if (enemy.health <= 0) {
+					logMessage(`${enemy.name}は倒れた！あなたの勝ちです。`);
+					document.getElementById('attack-btn').disabled = true;
+				}
+			}
+
+			// 攻撃ボタンをクリックしたときの処理
+			document.getElementById('attack-btn').addEventListener('click', function () {
+				// プレイヤーが攻撃する
+				attack(player, enemy);
+				// 敵が攻撃する
+				if (enemy.health > 0) {
+					attack(enemy, player);
+				}
+
+				// ステータスバーを更新する
+				updateStatusBar();
+			});
+
+
+
+			// 敵をランダムに作成する関数
+			function createRandomEnemy() {
+				const enemies = [
+					new Enemy('スライム', 20, 5, 'fire'),
+					new Enemy('ゴブリン', 30, 8, 'wind'),
+					new Enemy('ドラゴン', 50, 15, 'ice')
+				];
+				const randomIndex = Math.floor(Math.random() * enemies.length);
+				return enemies[randomIndex];
+			}
+			let enemy = createRandomEnemy(); // 最初の敵をランダムに作成する
+
+			// 初期状態でステータスバーを更新する
+			updateStatusBar();
+
+			document.getElementById('attack-btn').addEventListener('click', playerAttack);
+		}
+	</script>
+</body>
+
+</html>
