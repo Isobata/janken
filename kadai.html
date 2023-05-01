@@ -35,6 +35,7 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script>
 		//ここに処理を追加
+		let maxHP = 100;
 		let HP = 100;
 		let attack = 10;
 		let magic = 15;
@@ -84,9 +85,9 @@
 					$("#enemy_HP").text(enemy_HP);
 
 				} else {
-					$("#com_hand").text("ダメージを与えられない");
+					$("#judge").text("レベルが違う");
+					$("#result").text("ダメージを与えられない");
 				}
-
 			} else if (enemy <= 80) {
 				$("#judge").text("避けられた");
 				$("#result").text("ダメージを与えられない");
@@ -97,28 +98,62 @@
 				$("#enemy_HP").text(enemy_HP);
 			}
 			if (enemy_HP <= 0) {
-				alert("勝利！")
+				alert("勝利！");
 			}
 		})
-
 
 		$("#magic").on("click", function () {
 			const magic = Math.floor(Math.random() * 11);
 			if (magic <= 8) {
 				$("#judge").text("攻撃成功");
 				$("#result").text(attack + "のダメージ");
-			} else if (enemy === 1) {
-				count++;
-				lose++;
-				$("#com_hand").text("相手はチョキを出した");
-				$("#result").text("お前の負けだ\n" + count + "戦" + win + "勝" + lose + "敗です");
-				$("#result").css("color", "Blue");
+				enemy_HP -= attack;
+				$("#enemy_HP").text(enemy_HP);
 			} else {
-				$("#com_hand").text("相手はパーを出した");
-				$("#result").text("あいこだ\nもう一回！");
-				$("#result").css("color", "Black");
+				$("#judge").text("避けられた");
+				$("#result").text("ダメージを与えられない");
+			}
+			if (enemy_HP <= 0) {
+				alert("勝利！");
 			}
 		})
+
+		$("#cure").on("click", function () {
+			const cure = Math.floor(Math.random() * 11);
+			if (cure == 0) {
+				$("#judge").text("回復失敗");
+				$("#result").text("HPが回復しなかった");
+			}
+			if (HP + cure * 3 >= maxHP) {
+				HP = maxHP;
+				$("#judge").text("回復成功");
+				$("#result").text("HPが全壊した");
+			} else {
+				HP += cure * 3;
+				$("#judge").text("回復成功");
+				$("#result").text("HPが" + cure * 3 + "回復した");
+			}
+		})
+
+		$("#escape").on("click", function () {
+			const escape = Math.floor(Math.random() * 11);
+			if (escape <= 3) {
+				$("#judge").text("回復失敗");
+				$("#result").text("HPが回復しなかった");
+			}
+			if (HP + cure * 3 >= maxHP) {
+				HP = maxHP;
+				$("#judge").text("回復成功");
+				$("#result").text("HPが全壊した");
+			} else {
+				HP += cure * 3;
+				$("#judge").text("回復成功");
+				$("#result").text("HPが" + cure * 3 + "回復した");
+			}
+		})
+
+
+
 	</script>
 
 </body>
